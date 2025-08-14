@@ -6,6 +6,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded());
 
 app.use(cors());
 
@@ -21,6 +22,8 @@ const lyricsSchema = new mongoose.Schema({
     lyrics: String
 });
 const Lyrics = mongoose.model("Lyrics", lyricsSchema);
+
+
 
 // API to get song lyrics by song name and artist name using route parameters
 app.get('/lyrics/:song/:artist', async (req, res) => {
@@ -57,6 +60,20 @@ app.post('/lyrics/bulk', async (req, res) => {
     try {
         const result = await Lyrics.insertMany(lyricsArray);
         res.status(201).json({ insertedCount: result.length, insertedLyrics: result });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to insert lyrics" });
+    }
+});
+
+// API to insert lyrics (limit to 10)
+app.post('/lyrics/addOne', async (req, res) => {
+    const { songName, artistName, lyrics } = req.body;
+    if (!req.body) {
+        return res.status(400).json({ error: "Error body not found" });
+    }
+    try {
+        const result = await Lyrics.insertOne({ song: songName, artist: artistName, lyrics: lyrics });
+        res.status(201).json({ insertedLyrics: result });
     } catch (err) {
         res.status(500).json({ error: "Failed to insert lyrics" });
     }

@@ -32,7 +32,7 @@ app.get('/lyrics/:song/:artist', async (req, res) => {
         return res.status(400).json({ error: "Missing song or artist parameter" });
     }
     try {
-        const lyricsDoc = await Lyrics.findOne({ song, artist });
+        const lyricsDoc = await Lyrics.findOne({ song: { $regex: `${song}`, $options: ' $i' }, artist: { $regex: `${artist}`, $options: ' $i' } });
         if (!lyricsDoc) {
             return res.status(404).json({ error: "Lyrics not found" });
         }

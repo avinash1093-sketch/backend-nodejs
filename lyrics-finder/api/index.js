@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv"
+import routes from './routes/Auths.js'
+
 dotenv.config();
 
 const app = express();
@@ -14,6 +16,8 @@ app.use(cors());
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Connected to MongoDB"))
     .catch(err => console.error("MongoDB connection error:", err));
+
+app.use('/api/auth', routes);
 
 // Mongoose schema and model for lyrics
 const lyricsSchema = new mongoose.Schema({
@@ -80,7 +84,6 @@ app.post('/lyrics/addOne', async (req, res) => {
 });
 
 
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(process.env.SERVER_PORT_1, () => {
+    console.log(`Server listening on port ${process.env.SERVER_PORT_1}`);
 });
